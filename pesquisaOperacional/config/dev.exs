@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :pesquisaOperacional, PesquisaOperacional.Repo,
-  username: "myuser",
-  password: "mypassword",
+  username: "simplex",
+  password: "simplex123",
   hostname: "localhost",
   database: "mydatabase",
   stacktrace: true,

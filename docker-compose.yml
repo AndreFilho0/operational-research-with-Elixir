@@ -1,9 +1,26 @@
-version: "3.8"
+version: '3.7'
 
 services:
-  app:
-    build: .
-    ports:
-      - "4000:4000"
+  db:
+    image: postgres:latest
+    restart: always
     environment:
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: simplex
+      POSTGRES_PASSWORD: simplex123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+volumes:
+  pgdata:
