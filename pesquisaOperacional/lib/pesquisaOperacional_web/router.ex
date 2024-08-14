@@ -17,7 +17,8 @@ defmodule PesquisaOperacionalWeb.Router do
   scope "/", PesquisaOperacionalWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    #get "/", PageController, :home
+    live "/", PoHomeLive, as: :home
   end
 
   # Other scopes may use custom stacks.
