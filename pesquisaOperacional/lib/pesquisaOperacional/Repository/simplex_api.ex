@@ -42,5 +42,9 @@ defmodule PesquisaOperacional.Repository.SimplexApi do
     |> Repo.update()
   end
 
+  def json(model ,permission) do
+    Map.take(model,Simplexdto.permission(permission))
+  end
+
 
 end
