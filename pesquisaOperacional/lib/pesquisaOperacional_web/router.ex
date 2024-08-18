@@ -23,7 +23,10 @@ defmodule PesquisaOperacionalWeb.Router do
   # Other scopes may use custom stacks.
    scope "/api", PesquisaOperacionalWeb do
      pipe_through :api
+
      get "/simplex/all" , SimplexController , :all
+     get "/simplex/:id" , SimplexController , :get
+     post "/solve" , SimplexController , :solve
    end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

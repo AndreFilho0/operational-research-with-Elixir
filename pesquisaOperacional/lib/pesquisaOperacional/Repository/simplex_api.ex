@@ -3,16 +3,21 @@ defmodule PesquisaOperacional.Repository.SimplexApi do
 
    alias PesquisaOperacional.Repo
    alias PesquisaOperacional.Simplex.Simplexdto
+   
 
    import Ecto.Query
 
   def all do
-    Repo.all(Simplexdto)
+    {:ok,Repo.all(Simplexdto)}
 
   end
 
   def get(id) do
-    Repo.get(Simplexdto,id)
+    case Repo.get(Simplexdto,id) do
+      nil -> {:erro , :not_found }
+      simplex -> {:ok , simplex}
+    end
+
   end
 
   def get_by(where) do
@@ -43,6 +48,7 @@ defmodule PesquisaOperacional.Repository.SimplexApi do
   end
 
   def json(model ,permission) do
+
     Map.take(model,Simplexdto.permission(permission))
   end
 
