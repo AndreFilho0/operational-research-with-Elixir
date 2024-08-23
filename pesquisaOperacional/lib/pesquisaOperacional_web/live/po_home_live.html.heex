@@ -1,15 +1,55 @@
-nao esta renderizando daqui
-video form a partir de 42:33
-<h1 class="text-center font-bold">Elixir Simplex</h1>
-<div class="text-center">
-    <p>Método:</p>
-    <.form for={:new_po} let={f} phx-submit="po_form_submit">
-        <%= text_input f, :message %>
-    </.form>
-    <p>Número de variáveis de decisão:</p>
-    <input type="text" />
-    <p>Número de restrições:</p>
-    <input type="text" />
-    <br>
-    <button class="bg-cyan-400">Confirmar</button>
+<div>
+  <h1 class="text-center font-bold">Elixir Simplex</h1>
+  <div class="text-center">
+    <%= if @submitted do %>
+      <.form for={@funcoes} phx-submit="po_form_funcoes_submit" class="mt-4">
+        <%!-- form de criacao de funcao --%>
+        <div>
+          <p>Objetivo da função:</p>
+          <select name="tipo" placeholder=" ">
+            <option value="max"> Maximizar </option>
+            <option value="min"> Minimizar </option>
+          </select>
+
+          <%!-- gera campos para insersao de valores para funcao --%>
+          <p>Função de decisão: </p>
+          <div>
+            <%= for i <- 1..String.to_integer(@new_po.var_decisao) do %>
+              <input type="text" name="var_decisao[]" />X<%= i %>+
+            <% end %>
+          </div>
+          
+          <%!-- gera campos para insersao de valores para func rest --%>
+          <p>Funções de restrição: </p>
+          <div>
+            <%= for j <- 1..String.to_integer(@new_po.num_restricao) do %>
+              <div>
+                <%= for i <- 1..String.to_integer(@new_po.var_decisao) do %>
+                  <input type="text" name="var_restricao[]" class="mt-4 pl-1 pr-1"/>X<%= i %>+
+                <% end %>
+
+                <select name="condicao[]">
+                  <option value="="> = </option>
+                  <option value=">="> ≤ </option>
+                  <option value="<="> ≥ </option>
+                </select>
+                <input type="text" name="valor[]"/>
+              </div>
+            <% end %>
+          </div>
+          <button class="bg-cyan-400 mt-2">Confirmar</button>
+        </div>    
+      </.form>
+    <% else %>
+      <.form for={@new_po} phx-submit="po_form_submit">
+        <h2>Método Simplex</h2>
+        <p>Número de variáveis de decisão:</p>
+        <input type="text" name="var_decisao" value={@new_po.var_decisao}/>
+        <p>Número de restrições:</p>
+        <input type="text" name="num_restricao" value={@new_po.num_restricao}/>
+        <br>
+        <button class="bg-cyan-400 mt-2">Confirmar</button>
+      </.form>
+    <% end %>
+  </div>
 </div>

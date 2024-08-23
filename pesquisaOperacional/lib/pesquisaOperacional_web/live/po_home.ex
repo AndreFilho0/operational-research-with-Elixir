@@ -1,31 +1,77 @@
 defmodule PesquisaOperacionalWeb.PoHomeLive do
-  use Phoenix.LiveView
+  use PesquisaOperacionalWeb, :live_view
 
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    # Inicialize :new_po e :funcoes com mapas vazios ou com valores padrão
+    new_po = %{var_decisao: "", num_restricao: "", objetivo: ""}
+
+    funcoes = %{
+      objetivo: [],
+      tipo: "",
+      restricoes: []
+    }
+
+    {:ok, assign(socket, new_po: new_po, funcoes: funcoes, submitted: false)}
   end
 
-  #inicio da construcao de UI, ainda nao funcional
-  def render(assigns) do
-    ~H"""
-    <h1 class="text-center font-bold">Elixir Simplex</h1>
-    <div class="text-center">
-      <p>Método:</p>
-      <.form for={:new_po} let={f} phx-submit="po_form_submit">
-          <%= text_input f, :message %>
-      </.form>
-      <p>Número de variáveis de decisão:</p>
-      <input type="text" />
-      <p>Número de restrições:</p>
-      <input type="text" />
-      <br>
-      <button class="bg-cyan-400">Confirmar</button>
-    </div>
-    """
+  def handle_event(
+        "po_form_submit",
+        %{"var_decisao" => var_decisao, "num_restricao" => num_restricao},
+        socket
+      ) do
+    new_po = %{
+      var_decisao: var_decisao,
+      num_restricao: num_restricao
+    }
+
+    {:noreply, assign(socket, new_po: new_po, submitted: true)}
   end
 
-  def handle_event("po_form_submit", %{"po_form" => %{"message" => message}}, socket) do
+  def handle_event(
+        "po_form_funcoes_submit",
+        %{
+          "tipo" => tipo,
+          "var_decisao" => var_decisao,
+          "var_restricao" => var_restricao,
+          "condicao" => condicoes,
+          "valor" => valores
+        },
+        socket
+      ) do
+    funcoes = %{
+      objetivo: Enum.map(var_decisao, &String.to_integer/1),
+      tipo: tipo,
+      restricoes:
+        Enum.zip([var_restricao, condicoes, valores])
+        |> Enum.map(fn {coef, cond, val} ->
+          %{
+            "coeficientes" => Enum.map(coef, &String.to_integer/1),
+            "tipo" => cond,
+            "valor" => String.to_integer(val)
+          }
+        end)
+    }
+
+    IO.puts(inspect(funcoes))
+    send_post_request(funcoes)
 
     {:noreply, socket}
+  end
+
+  defp send_post_request(json_body) do
+    # Envie a requisição HTTP POST
+    url = "http://example.com/api"
+    headers = [{"Content-Type", "application/json"}]
+
+    case HTTPoison.post(url, Jason.encode!(json_body), headers) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        IO.puts("Requisição bem-sucedida: #{body}")
+
+      {:ok, %HTTPoison.Response{status_code: code}} ->
+        IO.puts("Falha na requisição. Código: #{code}")
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        IO.puts("Erro na requisição: #{reason}")
+    end
   end
 end
