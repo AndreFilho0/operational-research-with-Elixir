@@ -1,4 +1,4 @@
-<div>
+<div class="bg-slate-300 w-full h-full" >
   <h1 class="text-center font-bold">Elixir Simplex</h1>
   <div class="text-center">
     <%= if @submitted do %>
@@ -21,11 +21,11 @@
           
           <%!-- gera campos para insersao de valores para func rest --%>
           <p>Funções de restrição: </p>
-          <div>
+          <div class="">
             <%= for j <- 1..String.to_integer(@new_po.num_restricao) do %>
-              <div>
+              <div class="flex justify-center space-x-4">
                 <%= for i <- 1..String.to_integer(@new_po.var_decisao) do %>
-                  <input type="text" name="var_restricao[]" class="mt-4 pl-1 pr-1"/>X<%= i %>+
+                  <input type="text" name="var_restricao[]" class="mt-2"/>X<%= i %>+
                 <% end %>
 
                 <select name="condicao[]">
@@ -33,11 +33,11 @@
                   <option value=">="> ≤ </option>
                   <option value="<="> ≥ </option>
                 </select>
-                <input type="text" name="valor[]"/>
+                <input type="text" class="w-24" name="valor[]"/>
               </div>
             <% end %>
           </div>
-          <button class="bg-cyan-400 mt-2">Confirmar</button>
+          <button class="bg-green-500 rounded-md m-2">Confirmar</button>
         </div>    
       </.form>
     <% else %>
@@ -48,7 +48,7 @@
         <p>Número de restrições:</p>
         <input type="text" name="num_restricao" value={@new_po.num_restricao}/>
         <br>
-        <button class="bg-cyan-400 mt-2">Confirmar</button>
+        <button class="bg-green-500 m-3 rounded-md">Confirmar</button>
       </.form>
     <% end %>
   </div>
