@@ -24,32 +24,35 @@ defmodule PesquisaOperacional.SimplexContext do
   end
 
   def solve(params) do
-    numero_bases_possiveis =combinations(params["n"],params["m"])
+    numero_bases_possiveis =generate_combinations(params["n"],params["m"])
 
 
-    task1 = Task.async(fn -> calcular_funcao_objetivo(params,[0,1]) end)
-    task2 = Task.async(fn -> calcular_funcao_objetivo(params,[0,2]) end)
-    task3 = Task.async(fn -> calcular_funcao_objetivo(params,[0,3]) end)
-    task4 = Task.async(fn -> calcular_funcao_objetivo(params,[1,2]) end)
-    task5 = Task.async(fn -> calcular_funcao_objetivo(params,[1,3]) end)
-    task6 = Task.async(fn -> calcular_funcao_objetivo(params,[2,3]) end)
-
-    res1 = Task.await(task1)
-    res2 = Task.await(task2)
-    res3 = Task.await(task3)
-    res4 = Task.await(task4)
-    res5 = Task.await(task5)
-    res6 = Task.await(task6)
+    tasks =
+      Enum.map(numero_bases_possiveis, fn combinacao ->
+        Task.async(fn -> calcular_funcao_objetivo(params, combinacao) end)
+      end)
 
 
-    results = [res1, res2, res3, res4, res5, res6]
+    results = Enum.map(tasks, &Task.await/1)
+
 
     maps_only = Enum.filter(results, &is_map/1)
 
-    {:ok ,maps_only}
+    {:ok, maps_only}
 
 
 
+  end
+  def generate_combinations(n, m) do
+    0..(n - 1)
+    |> Enum.to_list()
+    |> comb(m)
+  end
+  defp comb(_, 0), do: [[]]
+  defp comb([], _), do: []
+
+  defp comb([head | tail], m) do
+    (for combination <- comb(tail, m - 1), do: [head | combination]) ++ comb(tail, m)
   end
   def calcular_funcao_objetivo(params,index) do
     gradiente = MatrixOperations.convert_to_matrix_gradiente(params["objetivo"],index)
