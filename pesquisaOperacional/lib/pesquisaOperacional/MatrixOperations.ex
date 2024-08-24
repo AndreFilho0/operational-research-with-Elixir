@@ -1,9 +1,13 @@
 defmodule PesquisaOperacional.MatrixOperations do
   alias Nx, as: N
 
-  def convert_to_matrix_restricoes(restricoes) do
+  def convert_to_matrix_restricoes(restricoes,index) do
     restricoes
     |> Enum.map(fn %{"coeficientes" => coef} -> coef end)
+    |> Enum.map(fn row ->
+      index
+      |> Enum.map(fn index -> Enum.at(row, index) end)
+    end)
     |> N.tensor()
   end
   def convert_to_matrix_b(restricoes) do
@@ -12,8 +16,9 @@ defmodule PesquisaOperacional.MatrixOperations do
     |> N.tensor()
     |> Nx.reshape({2, 1})
   end
-  def convert_to_matrix_gradiente(objetivo) do
-    objetivo
+  def convert_to_matrix_gradiente(objetivo,index) do
+    index
+    |> Enum.map(fn index -> Enum.at(objetivo, index) end)
     |> N.tensor()
 
   end
@@ -56,9 +61,9 @@ defmodule PesquisaOperacional.MatrixOperations do
 
   end
 
-  def inverter(restricoes) do
+  def inverter(restricoes, index) do
 
-    matrix = convert_to_matrix_restricoes(restricoes)
+    matrix = convert_to_matrix_restricoes(restricoes,index)
 
 
     case invert_matrix(matrix) do

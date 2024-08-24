@@ -32,16 +32,12 @@ defmodule PesquisaOperacionalWeb.SimplexController do
   end
 
   def solve(conn,params) do
-    gradiente = MatrixOperations.convert_to_matrix_gradiente(params["objetivo"])
-    IO.inspect(gradiente)
-    {:ok ,base_inversa} = MatrixOperations.inverter(params["restricoes"])
-    b = MatrixOperations.convert_to_matrix_b(params["restricoes"])
-    x = MatrixOperations.calculoSolucao(base_inversa,b)
-    case MatrixOperations.funcao_objetivo(gradiente,x) do
 
-      {:ok,simplexs } ->
-        put_status(conn,202)
-        |> json(%{status: 202, data: simplexs})
+    case SimplexContext.solve(params) do
+
+      {:ok, results} when is_list(results) ->
+        put_status(conn,200)
+        |> json(%{status: 200, data: results})
 
         {:error,msg } ->
           put_status(conn,400)
